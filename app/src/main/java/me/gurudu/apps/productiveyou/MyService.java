@@ -35,10 +35,10 @@ public class MyService extends Service {
                 ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
                 List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfo = am.getRunningAppProcesses();
 
-                for (int i = 0; i < runningAppProcessInfo.size(); i++) {
-                    Log.d(runningAppProcessInfo.get(i).processName,"is running");
-                    if (runningAppProcessInfo.get(i).processName.equals("com.android.dialer")) {
-                        if (isForeground(getApplicationContext(),runningAppProcessInfo.get(i).processName)){
+                for ( ActivityManager.RunningAppProcessInfo appProcess: runningAppProcessInfo ) {
+                    Log.d(appProcess.processName.toString(),"is running");
+                    if (appProcess.processName.equals("com.android.dialer")) {
+                        if ( appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND  /*isForeground(getApplicationContext(),runningAppProcessInfo.get(i).processName)*/){
                             if (phonelaunched == 0 ){
                                 phonelaunched = 1;
                                 Log.d(str,"dude phone has been launched");
@@ -61,17 +61,7 @@ public class MyService extends Service {
 
         return START_STICKY;
     }
-
-    public static boolean isForeground(Context ctx, String myPackage){
-        ActivityManager manager = (ActivityManager) ctx.getSystemService(ACTIVITY_SERVICE);
-        List< ActivityManager.RunningTaskInfo > runningTaskInfo = manager.getRunningTasks(1);
-
-        ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
-        if(componentInfo.getPackageName().equals(myPackage)) {
-            return true;
-        }
-        return false;
-    }
+    
 
     public void onDestroy() {
         super.onDestroy();
