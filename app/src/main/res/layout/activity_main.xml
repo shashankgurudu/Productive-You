@@ -2,25 +2,39 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#ffffff">
+    android:background="#ffffff"
+    android:orientation="vertical">
 
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/appNameText"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="startService"
+        android:text="Start Service"
         />
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/servicebutton"
         android:onClick="stopService"
-        />
+        android:text="Stop Service" />
 
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Default text"
+            android:id="@+id/Appname"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Default text"
+            android:id="@+id/Launches"/>
+    </LinearLayout>
 
 
 </LinearLayout>
