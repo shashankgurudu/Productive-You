@@ -67,6 +67,17 @@ public class DBHelper extends SQLiteOpenHelper {
             return null;
         }
    }
+    public Cursor getDatWithoutpackage(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select * from applaunches", null );
+        // Cursor res = db.rawQuery("select * from applaunches",null);
+        if (res != null){
+            return res;
+        }
+        else {
+            return null;
+        }
+    }
 
     public int numberOfRows(){
         SQLiteDatabase db = this.getReadableDatabase();
@@ -79,10 +90,11 @@ public class DBHelper extends SQLiteOpenHelper {
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        contentValues.put("launches",launches);
         contentValues.put("launched", launched);
         contentValues.put("closed", closed);
         db.update("applaunches", contentValues, "packagename = ? ", new String[]{packagename});
-        db.execSQL("UPDATE applaunches SET launches = launches +1 WHERE packagename = ?", new String[] {packagename});
+       // db.execSQL("UPDATE applaunches SET launches = launches +1 WHERE packagename = ?", new String[] {packagename});
         return true;
     }
 

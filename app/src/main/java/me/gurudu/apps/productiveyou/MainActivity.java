@@ -76,18 +76,24 @@ public class MainActivity extends Activity {
         stopService(new Intent(getBaseContext(), MyService.class));
     }
 
-  /*  public void onResume() {
+     public void onResume() {
         super.onResume();
 
-        Cursor rs = db.getData("com.android.dialer");
-        rs.moveToFirst();
-        String packagename = rs.getString(rs.getColumnIndex(DBHelper.CONTACTS_COLUMN_PKNAME));
-        String launchescounter = rs.getString(rs.getColumnIndex(DBHelper.CONTACTS_COLUMN_LAUNCHES));
+        Cursor a = db.getDatWithoutpackage();
+         a.moveToFirst();
+        int rs = db.numberOfRows();
+        for (int i =0;i<rs;i++) {
+            String packagename = a.getString(a.getColumnIndex(DBHelper.CONTACTS_COLUMN_PKNAME));
+            String launchescounter = a.getString(a.getColumnIndex(DBHelper.CONTACTS_COLUMN_LAUNCHES));
 
-        TextView appname = (TextView)findViewById(R.id.Appname);
-        appname.setText(packagename);
-        TextView launches = (TextView)findViewById(R.id.Launches);
-        launches.setText(launchescounter);
+            Log.d(packagename, " is the packagename");
+            Log.d(launchescounter," is the counter of the above packagename");
+            a.moveToNext();
+           /* TextView appname = (TextView) findViewById(R.id.Appname);
+            appname.setText(packagename);
+            TextView launches = (TextView) findViewById(R.id.Launches);
+            launches.setText(launchescounter);*/
 
-    }*/
+        }
+    }
 }
