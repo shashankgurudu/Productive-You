@@ -24,8 +24,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -33,37 +35,59 @@ public class MainActivity extends Activity {
 
 
     DBHelper db = new DBHelper(MainActivity.this);
+    public static ArrayList al;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         int launches = 0;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        db.insertlaunches("com.android.dialer",0);
+        al = new <String>ArrayList();
+        //db.insertlaunches("com.android.dialer", 0,0,0);
+       ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfo = am.getRunningAppProcesses();
+
+        for (ActivityManager.RunningAppProcessInfo appProcess : runningAppProcessInfo) {
+            //al.add(appProcess.processName.toString());
+            db.insertlaunches(appProcess.processName.toString(), 0,0,0);
+        }
+
+       /* ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        PackageManager pm = getPackageManager();
+        final List<ActivityManager.RunningAppProcessInfo> runningProcesses = activityManager.getRunningAppProcesses();
+        for(ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
+            CharSequence appName = null;
+            try {
+                appName = pm.getApplicationLabel(pm.getApplicationInfo(processInfo.processName, PackageManager.GET_META_DATA));
+                Log.d(appName.toString()," is package name");
+
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.e("","Application info not found for process : " + processInfo.processName,e);
+            }
+        }*/
+
     }
 
     public void startService(View view){
-            startService(new Intent(getBaseContext(), MyService.class));
+        startService(new Intent(getBaseContext(), MyService.class));
     }
 
     public void stopService(View view){
-            stopService(new Intent(getBaseContext(), MyService.class));
+        stopService(new Intent(getBaseContext(), MyService.class));
     }
 
-    public void onResume() {
+  /*  public void onResume() {
         super.onResume();
 
         Cursor rs = db.getData("com.android.dialer");
         rs.moveToFirst();
         String packagename = rs.getString(rs.getColumnIndex(DBHelper.CONTACTS_COLUMN_PKNAME));
-        String launchescounter = rs.getString(rs.getColumnIndex(DBHelper.CONTACTS_COLUMN_LAUCHES));
+        String launchescounter = rs.getString(rs.getColumnIndex(DBHelper.CONTACTS_COLUMN_LAUNCHES));
 
-            TextView appname = (TextView)findViewById(R.id.Appname);
-            appname.setText(packagename);
-            TextView launches = (TextView)findViewById(R.id.Launches);
-            launches.setText(launchescounter);
+        TextView appname = (TextView)findViewById(R.id.Appname);
+        appname.setText(packagename);
+        TextView launches = (TextView)findViewById(R.id.Launches);
+        launches.setText(launchescounter);
 
-    }
-
-
+    }*/
 }

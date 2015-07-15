@@ -18,7 +18,9 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String CONTACTS_TABLE_NAME = "applaunches";
     public static final String CONTACTS_COLUMN_ID = "id";
     public static final String CONTACTS_COLUMN_PKNAME = "packagename";
-    public static final String CONTACTS_COLUMN_LAUCHES = "launches";
+    public static final String CONTACTS_COLUMN_LAUNCHES = "launches";
+    public static final String CONTACTS_COLUMN_LAUNCHED = "launched";
+    public static final String CONTACTS_COLUMN_CLOSED = "closed";
     private HashMap hp;
 
     public DBHelper(Context context)
@@ -38,16 +40,18 @@ public class DBHelper extends SQLiteOpenHelper {
         // TODO Auto-generated method
         db.execSQL(
                 "create table if not exists applaunches " +
-                        "(id integer primary key, packagename text, launches int)"
+                        "(id integer primary key, packagename text, launches int, launched int, closed int)"
         );
-        Log.d("","Table created... "); // is it getting printed? no
+        Log.d("", "Table created... "); // is it getting printed? no
     }
 
-    public boolean insertlaunches(String packagename,int launches){
+    public boolean insertlaunches(String packagename,int launches,int launched, int closed){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("packagename",packagename);
         contentValues.put("launches", launches);
+        contentValues.put("launched", launched);
+        contentValues.put("closed", closed);
         db.insert("applaunches", null, contentValues);
         return true;
     }
@@ -55,8 +59,14 @@ public class DBHelper extends SQLiteOpenHelper {
     public Cursor getData(String packagename){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res =  db.rawQuery( "select * from applaunches where packagename='"+packagename+"'", null );
-        return res;
-    }
+       // Cursor res = db.rawQuery("select * from applaunches",null);
+        if (res != null){
+            return res;
+        }
+        else {
+            return null;
+        }
+   }
 
     public int numberOfRows(){
         SQLiteDatabase db = this.getReadableDatabase();
@@ -65,12 +75,13 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-    public boolean updatelaunches (String packagename, int launches)
+    public boolean updatelaunches (String packagename, int launches,int launched,int closed)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        //ContentValues contentValues = new ContentValues();
-        //contentValues.put("launches", launches);
-        //db.update("applaunches", contentValues, "packagename = ? ", new String[]{packagename});
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("launched", launched);
+        contentValues.put("closed", closed);
+        db.update("applaunches", contentValues, "packagename = ? ", new String[]{packagename});
         db.execSQL("UPDATE applaunches SET launches = launches +1 WHERE packagename = ?", new String[] {packagename});
         return true;
     }

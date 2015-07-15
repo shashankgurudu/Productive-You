@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MyService extends Service {
+
 
     static DBHelper db;
     Context context;
@@ -38,8 +40,8 @@ public class MyService extends Service {
         final String str = "";
         Timer timer  =  new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
-            int phonelaunched = 0,phoneclosed =0;
-            int phonelaunches = 1;
+           // int launched = 0,closed =0;
+           // int launches = 1;
             @Override
             public void run() {
                 ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -47,29 +49,50 @@ public class MyService extends Service {
 
                 for ( ActivityManager.RunningAppProcessInfo appProcess: runningAppProcessInfo ) {
                     Log.d(appProcess.processName.toString(), "is running");
-                    if (appProcess.processName.equals("com.android.dialer")) {
-                        if ( appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND  /*isForeground(getApplicationContext(),runningAppProcessInfo.get(i).processName)*/){
-                            if (phonelaunched == 0 ){
-                                phonelaunched = 1;
-                                Log.d(str, "dude phone has been launched");
-                               // Toast.makeText(getApplicationContext(), "phone has been launched", Toast.LENGTH_SHORT).show();
-                            }
-                            else if (phoneclosed == 1){
-                                phonelaunches++;
-                                phoneclosed = 0;
-                                Log.d(String.valueOf(phonelaunches), "dude that was counter");
-                                //Toast.makeText(getApplicationContext(),"dude that was counter",Toast.LENGTH_SHORT).show();
-                                db.updatelaunches(appProcess.processName,phonelaunches);
-                                Log.d("datavse ", "updated");
-                            }
-                        }
-                        else {
-                            phoneclosed = 1;
-                            Log.d(str, "dude phone has been closed");
-                          // Toast.makeText(getApplicationContext(), "dude phone has been closed", Toast.LENGTH_SHORT).show();
+                    Cursor s = db.getData(appProcess.processName);
+                    try {
+                            s.moveToFirst();
+                            String packagename = s.getString(s.getColumnIndex(DBHelper.CONTACTS_COLUMN_PKNAME));
+                            Log.d(packagename, "is retreived packagename");
+                            int claunches = s.getInt(s.getColumnIndex(DBHelper.CONTACTS_COLUMN_LAUNCHES));
+                            int claunched = s.getInt(s.getColumnIndex(DBHelper.CONTACTS_COLUMN_LAUNCHED));
+                            int cclosed = s.getInt(s.getColumnIndex(DBHelper.CONTACTS_COLUMN_CLOSED));
 
-                        }
+                            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                                Log.d(appProcess.processName, " is foreground app");
 
+
+                                Log.d(packagename, "is current package");
+                                if (claunched == 0) {
+                                    claunched = 1;
+                                    Log.d(appProcess.processName, "dude  has been launched");
+                                    db.updatelaunches(appProcess.processName, claunches, claunched, cclosed);
+                                    Log.d(Integer.toString(claunched), "launched");
+                                    s.close();
+
+                                } else if (cclosed == 1) {
+                                    claunches++;
+                                    cclosed = 0;
+                                    Log.d(String.valueOf(claunches), "dude that was counter");
+                                    db.updatelaunches(appProcess.processName, claunches, claunched, cclosed);
+                                    Log.d(Integer.toString(claunches), "number of launches");
+                                    s.close();
+                                }
+                            } else if (claunched == 1) {
+
+                                cclosed = 1;
+                                Log.d(appProcess.processName, "dude has been closed");
+
+                                Log.d(Integer.toString(cclosed), " is cclosed");
+                                db.updatelaunches(appProcess.processName, claunches, claunched, cclosed);
+                                Log.d("dude ", "updated");
+                                s.close();
+                            }
+                    } catch (Exception e) {
+
+                        Log.e("","process not found : " ,e);
+                        db.insertlaunches(appProcess.processName.toString(), 0, 0, 0);
+                        Log.d(" inserted in catch", "block");
                     }
                 }
             }
@@ -86,3 +109,4 @@ public class MyService extends Service {
     }
 
 }
+/*isForeground(getApplicationContext(),runningAppProcessInfo.get(i).processName)*/
