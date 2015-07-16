@@ -99,7 +99,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-    public ArrayList<String> getAllCotacts()
+    public ArrayList<String> getAllpackages()
     {
         ArrayList<String> array_list = new ArrayList<String>();
 
@@ -110,6 +110,21 @@ public class DBHelper extends SQLiteOpenHelper {
 
         while(res.isAfterLast() == false){
             array_list.add(res.getString(res.getColumnIndex(CONTACTS_COLUMN_PKNAME)));
+            res.moveToNext();
+        }
+        return array_list;
+    }
+    public ArrayList<String> getAlllaunches()
+    {
+        ArrayList<String> array_list = new ArrayList<String>();
+
+        //hp = new HashMap();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select * from applaunches", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add(res.getString(res.getColumnIndex(CONTACTS_COLUMN_LAUNCHES)));
             res.moveToNext();
         }
         return array_list;

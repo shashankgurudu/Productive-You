@@ -15,6 +15,8 @@ import android.net.TrafficStats;
 import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +35,14 @@ import java.util.Set;
 
 public class MainActivity extends Activity {
 
+    private static MyAdapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private static RecyclerView recyclerView;
+    private static ArrayList<String> packages;
+    private static ArrayList<String> launches;
+
+    private static ArrayList<Integer> removedItems;
+
 
     DBHelper db = new DBHelper(MainActivity.this);
     public static ArrayList al;
@@ -42,8 +52,9 @@ public class MainActivity extends Activity {
         int launches = 0;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        al = new <String>ArrayList();
-        //db.insertlaunches("com.android.dialer", 0,0,0);
+
+
+
        ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfo = am.getRunningAppProcesses();
 
@@ -52,19 +63,7 @@ public class MainActivity extends Activity {
             db.insertlaunches(appProcess.processName.toString(), 0,0,0);
         }
 
-       /* ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        PackageManager pm = getPackageManager();
-        final List<ActivityManager.RunningAppProcessInfo> runningProcesses = activityManager.getRunningAppProcesses();
-        for(ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
-            CharSequence appName = null;
-            try {
-                appName = pm.getApplicationLabel(pm.getApplicationInfo(processInfo.processName, PackageManager.GET_META_DATA));
-                Log.d(appName.toString()," is package name");
 
-            } catch (PackageManager.NameNotFoundException e) {
-                Log.e("","Application info not found for process : " + processInfo.processName,e);
-            }
-        }*/
 
     }
 
@@ -78,8 +77,21 @@ public class MainActivity extends Activity {
 
      public void onResume() {
         super.onResume();
+         recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+         recyclerView.setHasFixedSize(true);
 
-        Cursor a = db.getDatWithoutpackage();
+         layoutManager = new LinearLayoutManager(this);
+         recyclerView.setLayoutManager(layoutManager);
+
+         packages = db.getAllpackages();
+         launches = db.getAlllaunches();
+
+         adapter = new MyAdapter(packages,launches);
+         recyclerView.setAdapter(adapter);
+    }
+}
+/*
+Cursor a = db.getDatWithoutpackage();
          a.moveToFirst();
         int rs = db.numberOfRows();
         for (int i =0;i<rs;i++) {
@@ -89,11 +101,6 @@ public class MainActivity extends Activity {
             Log.d(packagename, " is the packagename");
             Log.d(launchescounter," is the counter of the above packagename");
             a.moveToNext();
-           /* TextView appname = (TextView) findViewById(R.id.Appname);
-            appname.setText(packagename);
-            TextView launches = (TextView) findViewById(R.id.Launches);
-            launches.setText(launchescounter);*/
 
         }
-    }
-}
+ */
